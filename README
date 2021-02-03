@@ -1,0 +1,7 @@
+AUTHOR: JOSEPH VASCONCELOS
+
+To run click on line 18 and debug the demo at this point you will be able to see all the data sorted into JSON format. 
+
+This project will pull from the college score card api.
+
+whats missing: any UI or functional return statement to present the data in a better fasion.
