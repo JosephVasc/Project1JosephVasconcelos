@@ -4,7 +4,7 @@ import random
 
 def open_db(filename: str) -> Tuple[sqlite3.Connection, sqlite3.Cursor]:
     db_connection = sqlite3.connect(filename)#connect to existing DB or create new one
-    cursor = db_connection.cursor()#read/write data
+    cursor = db_connection.cursor()#get ready to read/write data
     return db_connection, cursor
 
 
@@ -14,7 +14,7 @@ def close_db(connection: sqlite3.Connection):
 
 
 def setup_db(cursor: sqlite3.Cursor):
-    cursor.execute('''CREATE TABLE IF NOT EXISTS university_data(
+    cursor.execute('''CREATE TABLE IF NOT EXISTS uni_data(
     school_name,
     school_city,
     TwentyEighteen_student_size,
@@ -37,7 +37,7 @@ def api_data(cursor: sqlite3.Cursor):
 
 
 def main():
-    conn, cursor = open_db("university_data.sqlite")
+    conn, cursor = open_db("uni_data.sqlite")
     setup_db(cursor)
     api_data(cursor)
     print(type(conn))
