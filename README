@@ -1,7 +1,5 @@
 AUTHOR: JOSEPH VASCONCELOS
 
-To run click on line 18 and debug the demo at this point you will be able to see all the data sorted into JSON format. 
+To run, run the demo.py program 
 
-This project will pull from the college score card api.
-
-whats missing: any UI or functional return statement to present the data in a better fasion.
+This project will pull from the college score card api.. vers2.0 it now uploads this to a sqlite db 
