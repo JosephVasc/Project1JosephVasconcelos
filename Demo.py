@@ -9,7 +9,7 @@ import random
 def get_data():
     all_data = []
     page = 0
-    for page in range(160):
+    for page in range(5):
 
         response = requests.get(f"https://api.data.gov/ed/collegescorecard/v1/schools.json?school.degrees_awarded.predominant=2,3&fields=school.name,school.state,2018.student.size,2017.student.size,2017.earnings.3_yrs_after_completion.overall_count_over_poverty_line,2016.repayment.3_yr_repayment.overall&api_key={Secrets.api_key}&page={page}")
         if response.status_code != 200:
@@ -39,7 +39,7 @@ def close_db(connection: sqlite3.Connection):
 
 
 def setup_db(cursor: sqlite3.Cursor):
-    cursor.execute('''CREATE TABLE IF NOT EXISTS uni_data(
+    cursor.execute('''CREATE TABLE IF NOT EXISTS university_data(
     school_name,
     school_state,
     TwentyEighteen_student_size,
@@ -51,25 +51,22 @@ def setup_db(cursor: sqlite3.Cursor):
 def api_data(cursor: sqlite3.Cursor):
     all_data = get_data()
     for i in range(len(all_data)):
-        data1 = all_data[i]['school.name']
-        data2 = all_data[i]['school.state']
-        data3 = all_data[i]['2018.student.size']
-        data4 = all_data[i]['2017.student.size']
-        data5 = all_data[i]['2017.earnings.3_yrs_after_completion.overall_count_over_poverty_line']
-        data6 = all_data[i]['2016.repayment.3_yr_repayment.overall']
-        cursor.execute('INSERT INTO uni_data VALUES(?, ?, ?, ?, ?, ?)',
-                            (data1, data2, data3, data4, data5, data6))
+        d1 = all_data[i]['school.name']
+        d2 = all_data[i]['school.state']
+        d3 = all_data[i]['2018.student.size']
+        d4 = all_data[i]['2017.student.size']
+        d5 = all_data[i]['2017.earnings.3_yrs_after_completion.overall_count_over_poverty_line']
+        d6 = all_data[i]['2016.repayment.3_yr_repayment.overall']
+        cursor.execute('INSERT INTO university_data VALUES(?, ?, ?, ?, ?, ?)',
+                            (d1, d2, d3, d4, d5, d6))
 
 
 def main():
-    conn, cursor = open_db("uni_data.sqlite")
+    conn, cursor = open_db("university_data.sqlite")
     setup_db(cursor)
     api_data(cursor)
     print(type(conn))
     close_db(conn)
-
-
-
 
 
 
