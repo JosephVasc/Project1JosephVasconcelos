@@ -4,15 +4,15 @@ import Demo
 
 
 @pytest.fixture
-def get_data():
+def get_api_data():
     import Demo
     return Demo.api_data()
 
 
-def test_records_dict(get_data):
+def test_records_dict():
     # first required test
-    assert len(get_data) >=1000
-    assert type(get_data[1]) is dict
+    assert len(Demo.get_data()) >=1000
+    assert type(Demo.get_data[1]) is dict
 
 def test_save_data():
     # second required test
