@@ -62,6 +62,7 @@ def api_data(cursor: sqlite3.Cursor):
 
 
 def main():
+    # comment
     conn, cursor = open_db("university_data.sqlite")
     setup_db(cursor)
     api_data(cursor)
