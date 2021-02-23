@@ -3,6 +3,9 @@ import requests
 import json
 import sqlite3
 from typing import Tuple
+import openpyxl
+import pandas as pd
+from sqlalchemy import create_engine
 import random
 
 
@@ -23,6 +26,26 @@ def get_data():
 
 
     return all_data
+
+def excel_data(file_name):
+    # x = pd.read_csv('state_M2019_dl.xlsx')
+    # print(x.head())
+    wb = openpyxl.load_workbook(file_name)
+    ws = wb.active
+    return ws
+
+
+
+def get_excel_data(cursor: sqlite3.Cursor):
+    file = 'state_M2019_dl.xlsx'
+    xcl_info = excel_data(file)
+    for row in xcl_info.iter_rows(values_only=True):
+        cursor.execute('INSERT INTO excel_data VALUES(?, ?, ?, ?, ?, ?)',
+                       (row[7], row[1], row[8], row[10], row[19], row[24]))
+
+
+
+
 
 
 def open_db(filename: str) -> Tuple[sqlite3.Connection, sqlite3.Cursor]:
@@ -48,6 +71,16 @@ def setup_db(cursor: sqlite3.Cursor):
     TwentySixteen_repayment 
     );''')
 
+    cursor.execute('''CREATE TABLE IF NOT EXISTS employment_data(
+    area_title,
+    occ_title,
+    tot_emp,
+    a_pct_twentyfive,
+    occ_code
+    );''')
+
+
+
 def api_data(cursor: sqlite3.Cursor):
     all_data = get_data()
     for i in range(len(all_data)):
@@ -61,14 +94,18 @@ def api_data(cursor: sqlite3.Cursor):
                             (d1, d2, d3, d4, d5, d6))
 
 
+
 def main():
-    conn, cursor = open_db("university_data.sqlite")
+    # comment
+    conn, cursor =open_db("university_data.sqlite")
     setup_db(cursor)
     api_data(cursor)
+    get_excel_data()
     print(type(conn))
     close_db(conn)
 
 
+3
 
 def saveToFile(all_data): #saving all data to a json file.
     with open('file.json', "w") as my_data_file:
