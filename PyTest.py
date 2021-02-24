@@ -25,3 +25,7 @@ def test_save_data():
     collected_data = testfile.readlines()
     #the save puts a newline at the end
     assert f"{str(demo_data)}\n" in collected_data
+def test_excel_data():
+    file = 'state_M2019_dl.xlsx'
+    Demo.excel_data(file)
+

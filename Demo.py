@@ -50,12 +50,12 @@ def setup_db(cursor: sqlite3.Cursor):
     );''')
     cursor.execute("DROP TABLE IF EXISTS employee_data_sheet")
     cursor.execute('''CREATE TABLE IF NOT EXISTS employee_data_sheet(
-    ocode,
+    occ_code,
     state,
-    octotal,
-    totemp,
-    hpct,
-    apct 
+    oc_total,
+    tot_emp,
+    h_pct,
+    a_pct 
     );''')
 
 
@@ -85,7 +85,7 @@ def excel_data_sheet(cursor: sqlite3.Cursor):
 def main():
     conn, cursor = open_db("university_data.sqlite")
     setup_db(cursor)
-    #api_data(cursor)
+    api_data(cursor)
     excel_data_sheet(cursor)
     print(type(conn))
     close_db(conn)
