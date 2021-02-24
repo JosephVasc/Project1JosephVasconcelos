@@ -48,7 +48,8 @@ def setup_db(cursor: sqlite3.Cursor):
     TwentySeventeen_earnings,
     TwentySixteen_repayment 
     );''')
-    cursor.execute('''CREATE TABLE IF NOT EXISTS employee_data(
+    cursor.execute("DROP TABLE IF EXISTS employee_data_sheet")
+    cursor.execute('''CREATE TABLE IF NOT EXISTS employee_data_sheet(
     ocode,
     state,
     octotal,
@@ -70,22 +71,21 @@ def api_data(cursor: sqlite3.Cursor):
         d6 = all_data[i]['2016.repayment.3_yr_repayment.overall']
         cursor.execute('INSERT INTO university_data VALUES(?, ?, ?, ?, ?, ?)',
                             (d1, d2, d3, d4, d5, d6))
-def excel_data(file_name):
-    # x = pd.read_csv('state_M2019_dl.xlsx')
-    # print(x.head())
-    wb = openpyxl.load_workbook(file_name)
+def excel_data(file):
+    wb = openpyxl.load_workbook(file)
     ws = wb.active
     return ws
 def excel_data_sheet(cursor: sqlite3.Cursor):
     xcl_info = excel_data('state_M2019_dl.xlsx')
     for row in xcl_info.iter_rows(values_only=True):
-        cursor.execute('INSERT INTO employee_data VALUES(?, ?, ?, ?, ?, ?)',
+        if 'major' in row[9]:
+            cursor.execute('INSERT OR REPLACE INTO employee_data_sheet VALUES(?, ?, ?, ?, ?, ?)',
                        (row[7], row[1], row[8], row[10], row[19], row[24]))
 
 def main():
     conn, cursor = open_db("university_data.sqlite")
     setup_db(cursor)
-    api_data(cursor)
+    #api_data(cursor)
     excel_data_sheet(cursor)
     print(type(conn))
     close_db(conn)
