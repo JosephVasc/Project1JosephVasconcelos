@@ -1,6 +1,6 @@
 import pytest
 import Demo
-
+import openpyxl
 
 
 @pytest.fixture
@@ -27,5 +27,8 @@ def test_save_data():
     assert f"{str(demo_data)}\n" in collected_data
 def test_excel_data():
     file = 'state_M2019_dl.xlsx'
-    Demo.excel_data(file)
+    assert Demo.excel_data(file) == openpyxl.load_workbook(file)
+
+
+
 
