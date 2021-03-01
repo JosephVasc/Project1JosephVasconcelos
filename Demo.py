@@ -57,6 +57,7 @@ def setup_db(cursor: sqlite3.Cursor):
     h_pct,
     a_pct 
     );''')
+    return True
 
 
 

@@ -8,7 +8,8 @@ def get_api_data():
     import Demo
     return Demo.api_data()
 
-
+def setup_db():
+    assert Demo.setup_db() == True
 def test_records_dict():
     # first required test
     assert len(Demo.get_data()) >=1000
@@ -27,7 +28,9 @@ def test_save_data():
     assert f"{str(demo_data)}\n" in collected_data
 def test_excel_data():
     file = 'state_M2019_dl.xlsx'
-    assert Demo.excel_data(file) == openpyxl.load_workbook(file)
+    isTrue = False
+    isTrue = Demo.excel_data(file)
+    assert isTrue== True
 
 
 
