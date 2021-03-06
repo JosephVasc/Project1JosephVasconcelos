@@ -12,7 +12,7 @@ def get_data():
     page = 0
     for page in range(5):
 
-        response = requests.get(f"https://api.data.gov/ed/collegescorecard/v1/schools.json?school.degrees_awarded.predominant=2,3&fields=school.name,school.state,2018.student.size,2017.student.size,2017.earnings.3_yrs_after_completion.overall_count_over_poverty_line,2016.repayment.3_yr_repayment.overall&api_key={Secrets.api_key}&page={page}")
+        response = requests.get(f"https://api.data.gov/ed/collegescorecard/v1/schools.json?school.degrees_awarded.predominant=2,3&fields=school.name,school.state,2018.student.size,2017.student.size,2017.earnings.3_yrs_after_completion.overall_count_over_poverty_line,2016.repayment.repayment_cohort.3_year_declining_balance&api_key={Secrets.api_key}&page={page}")
         if response.status_code != 200:
             print ("error getting data")
             exit(-1)
@@ -69,7 +69,7 @@ def api_data(cursor: sqlite3.Cursor):
         d3 = all_data[i]['2018.student.size']
         d4 = all_data[i]['2017.student.size']
         d5 = all_data[i]['2017.earnings.3_yrs_after_completion.overall_count_over_poverty_line']
-        d6 = all_data[i]['2016.repayment.3_yr_repayment.overall']
+        d6 = all_data[i]['2016.repayment.repayment_cohort.3_year_declining_balance']
         cursor.execute('INSERT INTO university_data VALUES(?, ?, ?, ?, ?, ?)',
                             (d1, d2, d3, d4, d5, d6))
 def excel_data(file):
