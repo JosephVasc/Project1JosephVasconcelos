@@ -18,12 +18,12 @@ class Ui_MainWindow(object):
         self.pushButton_2 = QtWidgets.QPushButton(self.centralwidget)
         self.pushButton_2.setGeometry(QtCore.QRect(680, 160, 91, 41))
         self.pushButton_2.setObjectName("pushButton_2")
-        self.pushButton_2.clicked.connect(self.APIData)
+        self.pushButton_2.clicked.connect(self.ExcelData)
         self.tableWidget = QtWidgets.QTableWidget(self.centralwidget)
         self.tableWidget.setGeometry(QtCore.QRect(25, 21, 631, 421))
         self.tableWidget.setObjectName("tableWidget")
         self.tableWidget.setColumnCount(6)
-        self.tableWidget.setRowCount(1050)
+        self.tableWidget.setRowCount(4329)
         self.pushButton_3 = QtWidgets.QPushButton(self.centralwidget)
         self.pushButton_3.setGeometry(QtCore.QRect(270, 470, 101, 51))
         self.pushButton_3.setObjectName("pushButton_3")
@@ -46,9 +46,9 @@ class Ui_MainWindow(object):
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
-        MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
+        MainWindow.setWindowTitle(_translate("MainWindow", "JosephVasconcelos"))
         self.pushButton.setText(_translate("MainWindow", "SQLite DATA"))
-        self.pushButton_2.setText(_translate("MainWindow", "API DATA"))
+        self.pushButton_2.setText(_translate("MainWindow", "Excel Data"))
         self.pushButton_3.setText(_translate("MainWindow", "Exit"))
         self.pushButton_4.setText(_translate("MainWindow", "map"))
 
@@ -57,29 +57,21 @@ class Ui_MainWindow(object):
     def SQLiteData(self):
         print("sqlite data here")
         conn = sqlite3.connect("university_data.sqlite")
-        cursor = conn.cursor()
         sqlquery = "SELECT * FROM university_data"
-
-        self.tableWidget.setRowCount(6)
-        tableindex = 0
-        for row in cursor.execute(sqlquery):
-            print(row)
-            self.tableWidget.setItem(tableindex, 0, QtWidgets.QtableWIdgetItem(row[0]))
-            self.tableWidget.setItem(tableindex, 1, QtWidgets.QtableWIdgetItem(row[1]))
-            self.tableWidget.setItem(tableindex, 2, QtWidgets.QtableWIdgetItem(row[2]))
-            self.tableWidget.setItem(tableindex, 3, QtWidgets.QtableWIdgetItem(row[3]))
-            self.tableWidget.setItem(tableindex, 4, QtWidgets.QtableWIdgetItem(row[4]))
-            self.tableWidget.setItem(tableindex, 5, QtWidgets.QtableWIdgetItem(row[5]))
-            tableindex+=1
+        result = conn.execute(sqlquery)
+        self.tableWidget.setRowCount(0)
+        for row_number, row_data in enumerate(result):
+            self.tableWidget.insertRow(row_number)
+            for column_number, data in enumerate(row_data):
+                self.tableWidget.setItem(row_number, column_number, QtWidgets.QTableWidgetItem(str(data)))
+        conn.close()
 
 
-
-
-
-
-
-    def APIData(self):
+    def ExcelData(self):
         print("API data here")
+
+
+
     def MAP(selfs):
         print("map here")
 
