@@ -2,4 +2,6 @@ AUTHOR: JOSEPH VASCONCELOS
 
 To run, run the demo.py program 
 
-This project will pull from the college score card api.. vers2.0 it now uploads this to a sqlite db 
+This project will pull from the college score card api.. vers2.0 it now uploads this to a sqlite db
+the program can also accept a excel file and convert it into the database and handle the file
+GUI: I am using PyQt5 to handle the graphics and currently working on visualization
