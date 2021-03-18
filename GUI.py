@@ -95,6 +95,16 @@ class Ui_MainWindow(object):
             for column_number, data in enumerate(row_data):
                 self.tableWidget.setItem(row_number, column_number, QtWidgets.QTableWidgetItem(str(data)))
         conn.close()
+    def SQLliteDataSortByState(self):
+        conn = sqlite3.connect("university_data_new.sqlite")
+        sqlquery = "SELECT * FROM university_data_new order by school_state"
+        result = conn.execute(sqlquery)
+        self.tableWidget.setRowCount(0)
+        for row_number, row_data in enumerate(result):
+            self.tableWidget.insertRow(row_number)
+            for column_number, data in enumerate(row_data):
+                self.tableWidget.setItem(row_number, column_number, QtWidgets.QTableWidgetItem(str(data)))
+        conn.close()
 
     def ExcelData(self):
         conn = sqlite3.connect("university_data_new.sqlite")
@@ -123,7 +133,7 @@ class Ui_MainWindow(object):
         conn.close()
 
     def MAP(self):
-        united_states = json.load(open("us_states.geojson", 'r'))
+        united_states = json.load(open("united_states.geojson", 'r'))
         print(united_states['features'][0])
         state_id_map = {}
         for feature in united_states["features"]:
@@ -131,27 +141,41 @@ class Ui_MainWindow(object):
             state_id_map[feature["properties"]["abbr"]] = feature["id"]
 
         conn = sqlite3.connect("university_data_new.sqlite")
-        query = pd.read_sql_query('''SELECT school_state, school_name, TwentySeventeen_earnings 
-                                     FROM university_data_new''', conn)
-
-        df = pd.DataFrame(query, columns=['school_state', 'school_name', 'TwentySeventeen_earnings'])
-        print(df.head())
+        cursor = conn.cursor()
+        query = '''SELECT school_state, sum(TwentySeventeen_earnings) as earnings
+                                     FROM university_data_new
+                                     WHERE TwentySeventeen_earnings is not NULL and school_state not in ('FM','MH')
+                                     GROUP by school_state'''
+        result = cursor.execute(query)
+        rows = result.fetchall()
+        data = []
+        for row in rows:
+            data.append(row)
+        df = pd.DataFrame(data, columns=['school_state', 'earnings'])
+        print(df)
         print("State ID Map")
         print(state_id_map)
-        #df['id'] = df['school_state'].apply(lambda x: state_id_map[x])
-        print("hello")
-        conn.close()
-        fig = px.choropleth(df,
-                            locations="school_state",
-                            geojson=united_states,
-                            color="TwentySeventeen_earnings",
-                            scope='usa',
-                            hover_name="school_name",
-                            hover_data=['school_name', 'school_state', 'TwentySeventeen_earnings'],
-                            title="Mapping of School information"
-                            )
-        print("hello")
-        fig.write_html('tmp.html', auto_open=True)
+        print("here crash")
+        try:
+            df['id'] = df['school_state'].apply(lambda x: state_id_map[x])
+            print("hello")
+            conn.close()
+            fig = px.choropleth(df,
+                                locations="id",
+                                geojson=united_states,
+                                color="earnings",
+                                scope='usa',
+                                hover_name="school_state",
+                                hover_data=['school_state', 'earnings'],
+                                title="Mapping of School information"
+                                )
+            print("hello")
+            fig.write_html('tmp.html', auto_open=True)
+        except Exception as e:
+            print(e)
+
+
+
 
 
 if __name__ == "__main__":
