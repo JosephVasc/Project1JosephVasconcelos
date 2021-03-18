@@ -25,15 +25,15 @@ class Ui_MainWindow(object):
         self.centralwidget = QtWidgets.QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
         self.pushButton = QtWidgets.QPushButton(self.centralwidget)
-        self.pushButton.setGeometry(QtCore.QRect(680, 70, 91, 41))
+        self.pushButton.setGeometry(QtCore.QRect(680, 100, 91, 41))
         self.pushButton.setObjectName("pushButton")
         self.pushButton.clicked.connect(self.SQLiteData)
         self.clearButton = QtWidgets.QPushButton(self.centralwidget)
-        self.clearButton.setGeometry(QtCore.QRect(680, 110, 91, 41))
+        self.clearButton.setGeometry(QtCore.QRect(680, 150, 91, 41))
         self.clearButton.setObjectName("pushButton")
         self.clearButton.clicked.connect(self.clearData)
         self.pushButton_2 = QtWidgets.QPushButton(self.centralwidget)
-        self.pushButton_2.setGeometry(QtCore.QRect(680, 160, 91, 41))
+        self.pushButton_2.setGeometry(QtCore.QRect(680, 200, 91, 41))
         self.pushButton_2.setObjectName("pushButton_2")
         self.pushButton_2.clicked.connect(self.ExcelData)
         self.tableWidget = QtWidgets.QTableWidget(self.centralwidget)
@@ -46,13 +46,21 @@ class Ui_MainWindow(object):
         self.pushButton_3.setObjectName("pushButton_3")
         self.pushButton_3.clicked.connect(self.exit)
         self.pushButton_4 = QtWidgets.QPushButton(self.centralwidget)
-        self.pushButton_4.setGeometry(QtCore.QRect(680, 260, 75, 81))
+        self.pushButton_4.setGeometry(QtCore.QRect(680, 400, 75, 81))
         self.pushButton_4.setObjectName("pushButton_4")
         self.pushButton_4.clicked.connect(self.MAP)
         self.pushButton_5 = QtWidgets.QPushButton(self.centralwidget)
         self.pushButton_5.setGeometry(QtCore.QRect(680, 200, 91, 41))
         self.pushButton_5.setObjectName("pushButton")
         self.pushButton_5.clicked.connect(self.dataComparison)
+        self.orderButton = QtWidgets.QPushButton(self.centralwidget)
+        self.orderButton.setGeometry(QtCore.QRect(680, 50, 91, 41))
+        self.orderButton.setObjectName("pushButton")
+        self.orderButton.clicked.connect(self.SQLliteDataSortByState)
+        self.orderButton1 = QtWidgets.QPushButton(self.centralwidget)
+        self.orderButton1.setGeometry(QtCore.QRect(680, 10, 91, 41))
+        self.orderButton1.setObjectName("pushButton")
+        self.orderButton1.clicked.connect(self.SQLliteDataSortBySchool)
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtWidgets.QMenuBar(MainWindow)
         self.menubar.setGeometry(QtCore.QRect(0, 0, 800, 21))
@@ -74,6 +82,8 @@ class Ui_MainWindow(object):
         self.pushButton_3.setText(_translate("MainWindow", "Exit"))
         self.pushButton_4.setText(_translate("MainWindow", "map"))
         self.pushButton_5.setText(_translate("MainWindow", "Data Comparison"))
+        self.orderButton.setText(_translate("MainWindow", "Order By State"))
+        self.orderButton1.setText(_translate("MainWindow", "Order By School"))
 
     def clearData(self):
         msg = QMessageBox()
@@ -98,6 +108,16 @@ class Ui_MainWindow(object):
     def SQLliteDataSortByState(self):
         conn = sqlite3.connect("university_data_new.sqlite")
         sqlquery = "SELECT * FROM university_data_new order by school_state"
+        result = conn.execute(sqlquery)
+        self.tableWidget.setRowCount(0)
+        for row_number, row_data in enumerate(result):
+            self.tableWidget.insertRow(row_number)
+            for column_number, data in enumerate(row_data):
+                self.tableWidget.setItem(row_number, column_number, QtWidgets.QTableWidgetItem(str(data)))
+        conn.close()
+    def SQLliteDataSortBySchool(self):
+        conn = sqlite3.connect("university_data_new.sqlite")
+        sqlquery = "SELECT * FROM university_data_new order by school_name"
         result = conn.execute(sqlquery)
         self.tableWidget.setRowCount(0)
         for row_number, row_data in enumerate(result):
@@ -134,7 +154,6 @@ class Ui_MainWindow(object):
 
     def MAP(self):
         united_states = json.load(open("united_states.geojson", 'r'))
-        print(united_states['features'][0])
         state_id_map = {}
         for feature in united_states["features"]:
             feature["id"] = feature["properties"]["STATEFP"]
@@ -152,10 +171,6 @@ class Ui_MainWindow(object):
         for row in rows:
             data.append(row)
         df = pd.DataFrame(data, columns=['school_state', 'earnings'])
-        print(df)
-        print("State ID Map")
-        print(state_id_map)
-        print("here crash")
         try:
             df['id'] = df['school_state'].apply(lambda x: state_id_map[x])
             print("hello")
@@ -167,7 +182,7 @@ class Ui_MainWindow(object):
                                 scope='usa',
                                 hover_name="school_state",
                                 hover_data=['school_state', 'earnings'],
-                                title="Mapping of School information"
+                                title="Mapping of Graduate Earnings by State"
                                 )
             print("hello")
             fig.write_html('tmp.html', auto_open=True)
