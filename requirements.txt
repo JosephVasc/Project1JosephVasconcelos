@@ -1,1 +1,9 @@
-REQUIRED PACKAGES: requests, json, openpyxl, tuple, pytest, PyQt5
+REQUIRED PACKAGES:
+plotly~=4.14.3
+pandas~=1.2.2
+numpy~=1.20.1
+folium~=0.12.1
+PyQt5~=5.15.4
+requests~=2.25.1
+openpyxl~=3.0.6
+pytest~=6.2.2

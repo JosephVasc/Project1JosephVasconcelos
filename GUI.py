@@ -1,9 +1,20 @@
 from PyQt5 import QtCore, QtGui, QtWidgets, QtWidgets
 from PyQt5.QtWidgets import QMessageBox
-from PyQt5.QtWidgets import QMenu
+from PyQt5 import QtWebEngineWidgets, QtSql
+import json
+import plotly.express as px
+import plotly.io as pio
+from pandas import DataFrame
+
+pio.renderers.default = 'firefox'
 import sqlite3
+import pandas as pd
+import numpy as py
+import folium
+import io
+import math
 import Demo
-from PyQt5 import QtSql
+
 import sys
 
 
@@ -62,11 +73,7 @@ class Ui_MainWindow(object):
         self.pushButton_2.setText(_translate("MainWindow", "Excel Data"))
         self.pushButton_3.setText(_translate("MainWindow", "Exit"))
         self.pushButton_4.setText(_translate("MainWindow", "map"))
-        self.pushButton_5.setText(_translate("MainWindow","Data Comparison"))
-
-
-
-
+        self.pushButton_5.setText(_translate("MainWindow", "Data Comparison"))
 
     def clearData(self):
         msg = QMessageBox()
@@ -74,11 +81,13 @@ class Ui_MainWindow(object):
         msg.setText("Click Ok to clear data.")
         x = msg.exec_()
         self.tableWidget.setRowCount(0)
+
     def exit(self):
         sys.exit()
+
     def SQLiteData(self):
-        conn = sqlite3.connect("university_data.sqlite")
-        sqlquery = "SELECT * FROM university_data"
+        conn = sqlite3.connect("university_data_new.sqlite")
+        sqlquery = "SELECT * FROM university_data_new"
         result = conn.execute(sqlquery)
         self.tableWidget.setRowCount(0)
         for row_number, row_data in enumerate(result):
@@ -87,10 +96,8 @@ class Ui_MainWindow(object):
                 self.tableWidget.setItem(row_number, column_number, QtWidgets.QTableWidgetItem(str(data)))
         conn.close()
 
-
-
     def ExcelData(self):
-        conn = sqlite3.connect("university_data.sqlite")
+        conn = sqlite3.connect("university_data_new.sqlite")
         sqlquery = "SELECT * FROM employee_data_sheet"
         result = conn.execute(sqlquery)
         self.tableWidget.setRowCount(0)
@@ -101,12 +108,12 @@ class Ui_MainWindow(object):
         conn.close()
 
     def dataComparison(self):
-        conn = sqlite3.connect("university_data.sqlite")
-        sqlquery1 = "SELECT * FROM employee_data_sheet"
-        sqlquery2 = "SELECT * FROM university_data"
+        conn = sqlite3.connect("university_data_new.sqlite")
+        print("Data comp")
+        sqlquery1 = "SELECT columns1 FROM university_data EXCEPT SELECT columns2 FROM employee_data_sheet;"
+
         result = conn.execute(sqlquery1)
-        header = 'header'
-        self.tableWidget.setHorizontalHeader(header)
+
         self.tableWidget.setRowCount(0)
         for row_number, row_data in enumerate(result):
             self.tableWidget.insertRow(row_number)
@@ -115,29 +122,44 @@ class Ui_MainWindow(object):
 
         conn.close()
 
+    def MAP(self):
+        united_states = json.load(open("us_states.geojson", 'r'))
+        print(united_states['features'][0])
+        state_id_map = {}
+        for feature in united_states["features"]:
+            feature["id"] = feature["properties"]["STATEFP"]
+            state_id_map[feature["properties"]["abbr"]] = feature["id"]
 
+        conn = sqlite3.connect("university_data_new.sqlite")
+        query = pd.read_sql_query('''SELECT school_state, school_name, TwentySeventeen_earnings 
+                                     FROM university_data_new''', conn)
 
-    def MAP(selfs):
-        print("map here")
-
-
-
-
+        df = pd.DataFrame(query, columns=['school_state', 'school_name', 'TwentySeventeen_earnings'])
+        print(df.head())
+        print("State ID Map")
+        print(state_id_map)
+        #df['id'] = df['school_state'].apply(lambda x: state_id_map[x])
+        print("hello")
+        conn.close()
+        fig = px.choropleth(df,
+                            locations="school_state",
+                            geojson=united_states,
+                            color="TwentySeventeen_earnings",
+                            scope='usa',
+                            hover_name="school_name",
+                            hover_data=['school_name', 'school_state', 'TwentySeventeen_earnings'],
+                            title="Mapping of School information"
+                            )
+        print("hello")
+        fig.write_html('tmp.html', auto_open=True)
 
 
 if __name__ == "__main__":
     import sys
+
     app = QtWidgets.QApplication(sys.argv)
     MainWindow = QtWidgets.QMainWindow()
     ui = Ui_MainWindow()
     ui.setupUi(MainWindow)
     MainWindow.show()
     sys.exit(app.exec_())
-
-
-
-
-
-
-
-

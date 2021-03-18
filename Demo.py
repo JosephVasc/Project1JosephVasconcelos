@@ -40,7 +40,7 @@ def close_db(connection: sqlite3.Connection):
 
 
 def setup_db(cursor: sqlite3.Cursor):
-    cursor.execute('''CREATE TABLE IF NOT EXISTS university_data(
+    cursor.execute('''CREATE TABLE IF NOT EXISTS university_data_new(
     school_name,
     school_state,
     TwentyEighteen_student_size,
@@ -70,7 +70,7 @@ def api_data(cursor: sqlite3.Cursor):
         d4 = all_data[i]['2017.student.size']
         d5 = all_data[i]['2017.earnings.3_yrs_after_completion.overall_count_over_poverty_line']
         d6 = all_data[i]['2016.repayment.repayment_cohort.3_year_declining_balance']
-        cursor.execute('INSERT INTO university_data VALUES(?, ?, ?, ?, ?, ?)',
+        cursor.execute('INSERT INTO university_data_new VALUES(?, ?, ?, ?, ?, ?)',
                             (d1, d2, d3, d4, d5, d6))
 def excel_data(file):
     wb = openpyxl.load_workbook(file)
@@ -84,7 +84,7 @@ def excel_data_sheet(cursor: sqlite3.Cursor):
                        (row[7], row[1], row[8], row[10], row[19], row[24]))
 
 def main():
-    conn, cursor = open_db("university_data.sqlite")
+    conn, cursor = open_db("university_data_new.sqlite")
     setup_db(cursor)
     api_data(cursor)
     excel_data_sheet(cursor)
