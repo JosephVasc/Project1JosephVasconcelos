@@ -1,7 +1,16 @@
 AUTHOR: JOSEPH VASCONCELOS
 
-To run, run the demo.py program 
+To run, run the demo.py program, this will populate the database with the correct amount of information
+to run a visual run the GUI file, this will launch a GUI application.
 
 This project will pull from the college score card api.. vers2.0 it now uploads this to a sqlite db
 the program can also accept a excel file and convert it into the database and handle the file
-GUI: I am using PyQt5 to handle the graphics and currently working on visualization
+GUI: I am using PyQt5 to handle the graphics
+the Program will load editable data from both excel and sqlite
+
+you can also choose to have a map visualization when running the app in form of choropleth map (will display in browser)
+im not total sure if my comparisons are correct but im short on time (the choropleth map took me a long time)
+
+
+Testing: GUI test plan: I wish I had more time to get into GUI testing but my plan is to run both test scripts
+assert test cases, and most importantly user testing experience

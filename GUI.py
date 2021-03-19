@@ -33,7 +33,7 @@ class Ui_MainWindow(object):
         self.clearButton.setObjectName("pushButton")
         self.clearButton.clicked.connect(self.clearData)
         self.pushButton_2 = QtWidgets.QPushButton(self.centralwidget)
-        self.pushButton_2.setGeometry(QtCore.QRect(680, 200, 91, 41))
+        self.pushButton_2.setGeometry(QtCore.QRect(680, 300, 91, 41))
         self.pushButton_2.setObjectName("pushButton_2")
         self.pushButton_2.clicked.connect(self.ExcelData)
         self.tableWidget = QtWidgets.QTableWidget(self.centralwidget)
@@ -61,6 +61,10 @@ class Ui_MainWindow(object):
         self.orderButton1.setGeometry(QtCore.QRect(680, 10, 91, 41))
         self.orderButton1.setObjectName("pushButton")
         self.orderButton1.clicked.connect(self.SQLliteDataSortBySchool)
+        self.pushButton_6 = QtWidgets.QPushButton(self.centralwidget)
+        self.pushButton_6.setGeometry(QtCore.QRect(680, 250, 91, 41))
+        self.pushButton_6.setObjectName("pushButton")
+        self.pushButton_6.clicked.connect(self.dataComparison2)
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtWidgets.QMenuBar(MainWindow)
         self.menubar.setGeometry(QtCore.QRect(0, 0, 800, 21))
@@ -82,6 +86,7 @@ class Ui_MainWindow(object):
         self.pushButton_3.setText(_translate("MainWindow", "Exit"))
         self.pushButton_4.setText(_translate("MainWindow", "map"))
         self.pushButton_5.setText(_translate("MainWindow", "Data Comparison"))
+        self.pushButton_6.setText(_translate("MainWindow", "Data Comparison 2"))
         self.orderButton.setText(_translate("MainWindow", "Order By State"))
         self.orderButton1.setText(_translate("MainWindow", "Order By School"))
 
@@ -138,9 +143,12 @@ class Ui_MainWindow(object):
         conn.close()
 
     def dataComparison(self):
+        #compare the number of college graduates in a state (for the most recent year) with number of jobs in that state
         conn = sqlite3.connect("university_data_new.sqlite")
-        print("Data comp")
-        sqlquery1 = "SELECT columns1 FROM university_data EXCEPT SELECT columns2 FROM employee_data_sheet;"
+
+        sqlquery1 = '''SELECT university_data_new.school_state, employee_data_sheet.tot_emp, university_data_new.TwentyEighteen_student_size
+                        FROM employee_data_sheet, university_data_new limit 3000'''
+
 
         result = conn.execute(sqlquery1)
 
@@ -152,6 +160,22 @@ class Ui_MainWindow(object):
 
         conn.close()
 
+    def dataComparison2(self):
+        conn = sqlite3.connect("university_data_new.sqlite")
+
+        sqlquery1 = '''SELECT university_data_new.TwentySixteen_repayment, employee_data_sheet.a_pct, university_data_new.school_state
+                        FROM employee_data_sheet, university_data_new limit 3000'''
+
+        result = conn.execute(sqlquery1)
+
+        self.tableWidget.setRowCount(0)
+        for row_number, row_data in enumerate(result):
+            self.tableWidget.insertRow(row_number)
+            for column_number, data in enumerate(row_data):
+                self.tableWidget.setItem(row_number, column_number, QtWidgets.QTableWidgetItem(str(data)))
+
+        conn.close()
+        return True
     def MAP(self):
         united_states = json.load(open("united_states.geojson", 'r'))
         state_id_map = {}
@@ -186,9 +210,10 @@ class Ui_MainWindow(object):
                                 )
             print("hello")
             fig.write_html('tmp.html', auto_open=True)
+
         except Exception as e:
             print(e)
-
+        return True
 
 
 

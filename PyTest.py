@@ -1,5 +1,7 @@
 import pytest
 import Demo
+import PyQt5
+import GUI
 import openpyxl
 
 
@@ -31,6 +33,8 @@ def test_excel_data():
     isTrue = False
     isTrue = Demo.excel_data(file)
     assert isTrue== True
+def widgetTest():
+    widget = GUI.QtWidgets() #ran out of time...........
 
 
 
